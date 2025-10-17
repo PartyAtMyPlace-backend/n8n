@@ -1,20 +1,9 @@
-# Use Node 24 (LTS)
-FROM node:24-bullseye
+# ✅ Use official n8n image — already includes Node, npm, and all deps
+FROM n8nio/n8n:latest
 
-# Set working directory
-WORKDIR /opt/n8n
+# Optional: set timezone and environment
+ENV GENERIC_TIMEZONE=Europe/Amsterdam
+ENV NODE_ENV=production
 
-# Copy the entire fork into the container
-COPY . .
-
-# Install dependencies
-RUN npm install
-
-# Build n8n
-RUN npm run build
-
-# Expose n8n port
-EXPOSE 5678
-
-# Start n8n
-CMD ["npm", "start"]
+# You don’t need to copy or build anything — n8n handles this internally.
+# The official image already starts n8n automatically on container boot.
