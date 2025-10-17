@@ -2,11 +2,18 @@ services:
   - type: web
     name: n8n-partyatmyplace
     env: docker
-    plan: starter  # or upgrade if you need more memory
+    plan: starter
+    region: oregon
+    branch: master
     autoDeploy: true
-    branch: main   # or your branch name
     healthCheckPath: /
+    dockerfilePath: Dockerfile
+
+    buildCommand: echo "Skipping build step"
+    startCommand: tini -- n8n
+
     envVars:
+      # --- Core n8n config ---
       - key: N8N_HOST
         value: n8n-partyatmyplace.onrender.com
       - key: N8N_PROTOCOL
@@ -14,37 +21,42 @@ services:
       - key: WEBHOOK_URL
         value: https://n8n-partyatmyplace.onrender.com/
       - key: N8N_PORT
-        value: 10000
+        value: "10000"
       - key: N8N_ENCRYPTION_KEY
-        generateValue: true     # Render will auto-generate a random key
+        value: replace-with-long-random-string
       - key: N8N_FORCE_SECURE_COOKIE
         value: "true"
       - key: N8N_FUNCTION_NODE_V2
         value: "true"
       - key: GENERIC_TIMEZONE
         value: Europe/Amsterdam
-      # Database connection (adjust these to match your Render Postgres service)
+      - key: NODE_ENV
+        value: production
+
+      # --- Authentication for your n8n dashboard ---
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: info@partyatmyplace.nl
+      - key: N8N_BASIC_AUTH_PASSWORD
+        value: Thw1999Gte1996!!
+
+      # --- Database (Postgres on Render) ---
       - key: DB_TYPE
         value: postgresdb
+      - key: DB_POSTGRESDB_DATABASE
+        value: n8n_database_lowy
       - key: DB_POSTGRESDB_HOST
-        fromService:
-          type: pserv
-          name: your-postgres-service-name   # 🔁 change this
-          property: host
+        value: dpg-d3p0ave3pjic739qeed0-a
+      - key: DB_POSTGRESDB_PASSWORD
+        value: pNQE3rSRm82oMbcuHWl5FBhM2YvoTNZ
       - key: DB_POSTGRESDB_PORT
         value: "5432"
       - key: DB_POSTGRESDB_USER
-        fromService:
-          type: pserv
-          name: your-postgres-service-name   # 🔁 change this
-          property: user
-      - key: DB_POSTGRESDB_PASSWORD
-        fromService:
-          type: pserv
-          name: your-postgres-service-name   # 🔁 change this
-          property: password
-      - key: DB_POSTGRESDB_DATABASE
-        fromService:
-          type: pserv
-          name: your-postgres-service-name   # 🔁 change this
-          property: database
+        value: n8n_user
+
+      # --- Other optional config ---
+      - key: EXECUTIONS_PROCESS
+        value: main
+      - key: NODE_VERSION
+        value: 22.16.0
