@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: n8n-partyatmyplace
+    env: docker
+    plan: starter  # or upgrade if you need more memory
+    autoDeploy: true
+    branch: main   # or your branch name
+    healthCheckPath: /
+    envVars:
+      - key: N8N_HOST
+        value: n8n-partyatmyplace.onrender.com
+      - key: N8N_PROTOCOL
+        value: https
+      - key: WEBHOOK_URL
+        value: https://n8n-partyatmyplace.onrender.com/
+      - key: N8N_PORT
+        value: 10000
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true     # Render will auto-generate a random key
+      - key: N8N_FORCE_SECURE_COOKIE
+        value: "true"
+      - key: N8N_FUNCTION_NODE_V2
+        value: "true"
+      - key: GENERIC_TIMEZONE
+        value: Europe/Amsterdam
+      # Database connection (adjust these to match your Render Postgres service)
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        fromService:
+          type: pserv
+          name: your-postgres-service-name   # 🔁 change this
+          property: host
+      - key: DB_POSTGRESDB_PORT
+        value: "5432"
+      - key: DB_POSTGRESDB_USER
+        fromService:
+          type: pserv
+          name: your-postgres-service-name   # 🔁 change this
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromService:
+          type: pserv
+          name: your-postgres-service-name   # 🔁 change this
+          property: password
+      - key: DB_POSTGRESDB_DATABASE
+        fromService:
+          type: pserv
+          name: your-postgres-service-name   # 🔁 change this
+          property: database
